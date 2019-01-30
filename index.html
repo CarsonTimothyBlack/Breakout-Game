@@ -37,6 +37,8 @@
   var brickPadding = 10;
   var brickOffsetTop = 30;
   var brickOffsetLeft = 30;
+  //Score variable
+  var score = 0;
 
   //Brick array creation
   var bricks = [];
@@ -82,12 +84,41 @@
     ctx.closePath();
   }
 
-//drawing all objects function
+  //Collision detection function
+  function collisionDetecton() {
+    for(var c = 0; c < brickColumnCount; c++) {
+      for(var r = 0; r < brickRowCount; r++) {
+        var b = bricks[c][r];
+        if(b.status == 1) {
+          if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+            dy = -dy;
+            b.status = 0;
+            score++;
+            if(score == brickRowCount*brickColumnCount) {
+              alert("YOU WIN, CONGRATULATIONS!");
+              document.location.reload();
+              clearInterval(interval);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //Score rendering function
+  function drawScore() {
+    ctx.font = "16px Arieal";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Score: " + score, 8, 20);
+  }
+
+  //drawing all objects function
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
     collisionDetecton()
 
     if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
@@ -99,7 +130,7 @@
       if(x > paddleX && x < paddleX + paddleWidth) {
         dy = -dy;
       } else {
-        alert("GAME OVER");
+        alert("GAME OVER! You got only " + score + " points.");
         document.location.reload();
       }
   }
@@ -124,21 +155,6 @@
       else if(e.key == "Left" || e.key == "ArrowLeft") {
           leftPressed = false;
       }
-  }
-
-  //Collision detection function
-  function collisionDetecton() {
-    for(var c = 0; c < brickColumnCount; c++) {
-      for(var r = 0; r < brickRowCount; r++) {
-        var b = bricks[c][r];
-        if(b.status == 1) {
-          if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-            dy = -dy;
-            b.status = 0;
-          }
-        }
-      }
-    }
   }
 
   if(rightPressed && paddleX < canvas.width-paddleWidth) {
